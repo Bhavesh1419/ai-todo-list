@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI To-Do List</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #task-list { margin-top: 20px; }
+        .task { padding: 10px; border: 1px solid #ddd; margin: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>AI To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Enter a task">
+    <button onclick="addTask()">Add Task</button>
+
+    <h2>Tasks</h2>
+    <div id="task-list"></div>
+
+    <script>
+        async function fetchTasks() {
+            let response = await fetch("/tasks/");
+            let tasks = await response.json();
+            document.getElementById("task-list").innerHTML = tasks.map(task => 
+                `<div class="task">${task.description}</div>`
+            ).join("");
+        }
+
+        async function addTask() {
+            let taskDesc = document.getElementById("taskInput").value;
+            if (!taskDesc) return alert("Please enter a task!");
+            await fetch(`/add-task/?description=${taskDesc}`, { method: "POST" });
+            document.getElementById("taskInput").value = "";
+            fetchTasks(); // Refresh task list
+        }
+
+        fetchTasks(); // Load tasks on page load
+    </script>
+</body>
+</html>
